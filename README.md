@@ -110,7 +110,7 @@ Grâce au `dependabot.yml` existant, Dependabot a ouvert **7 PRs** de mise à jo
 | #6 | `bootstrap` 5.3.5 → 5.3.8                | OK            | Fusionnée     |
 | #7 | `bcprov-jdk18on` 1.85 → 1.86             | OK            | Fusionnée     |
 
-La PR #3 est une mise à jour **majeure** (0.9.1 → 0.13.0) : l'API de la bibliothèque a changé et le pipeline échoue. Elle nécessite une adaptation du code et n'a donc pas été fusionnée automatiquement.
+La PR #3 est une mise à jour **majeure** (0.9.1 → 0.13.0) qui échoue à la compilation : `package io.jsonwebtoken.impl does not exist` dans trois fichiers des leçons JWT. Le code de WebGoat doit être migré vers la nouvelle structure de la bibliothèque. Aucune des alertes de sécurité ne concernait cette bibliothèque, nous ne l'avons donc pas fusionnée.
 
 ![Échec de la PR jjwt](images/10-pr-jjwt-echec.png)
 
