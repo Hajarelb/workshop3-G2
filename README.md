@@ -174,9 +174,9 @@ xstream.allowTypes(new Class[] {ContactImpl.class}); // ligne ajoutée
 xstream.ignoreUnknownElements();
 ```
 
-| Fichier | Modification |
-|---|---|
-| `VulnerableComponentsLesson.java` | ajout de `allowTypes` après `alias` |
+|                Fichier                |             Modification             |
+|---------------------------------------|--------------------------------------|
+| `VulnerableComponentsLesson.java`     | ajout de `allowTypes` après `alias`  |
 | `VulnerableComponentsLessonTest.java` | même ajout dans `testTransformation` |
 
 ![Correction dans la leçon](images/17-correction-lesson.png)
@@ -199,11 +199,23 @@ Le pipeline sur `main` reste vert : le projet compile et les 398 tests passent.
 
 Après la fusion, les **36 alertes** ont été fermées : le compteur **Open** est passé de **36 à 0**.
 
-|      | Avant | Après |
-|---|---|---|
-| Alertes Dependabot ouvertes | 36 | 0 |
-| XStream | 1.4.5 | 1.4.21 |
+|                             | Avant | Après  |
+|-----------------------------|-------|--------|
+| Alertes Dependabot ouvertes | 36    | 0      |
+| XStream                     | 1.4.5 | 1.4.21 |
 
 ![Alertes après correction](images/22-alertes-apres-correction.png)
 
 > **Compromis** : la liste blanche empêche l'exploitation de la leçon *Vulnerable Components* telle qu'elle est conçue (injection d'un objet malveillant dans XStream). C'est précisément l'effet recherché d'une correction de sécurité, mais l'exercice pédagogique ne peut plus être résolu comme prévu.
+
+## 13. OWASP Dependency-Check : principe et préparation
+
+Contrairement à Dependabot, qui s'appuie sur la base GitHub Advisory et propose des mises à jour, **OWASP Dependency-Check** est un outil SCA qui analyse les dépendances du projet et les compare à la base **NVD** (National Vulnerability Database). Il fonctionne en trois temps :
+
+1. **Identification** : collecte d'indices (nom du JAR, groupId, version) pour déduire l'identifiant **CPE** de chaque bibliothèque.
+2. **Corrélation** : comparaison des CPE avec la NVD pour trouver les **CVE** associées.
+3. **Rapport** : génération d'un rapport HTML/JSON avec la gravité (score CVSS) de chaque vulnérabilité.
+
+L'outil utilise l'API de la NVD, qui impose des limites de débit. Sans clé API, la mise à jour de la base est extrêmement lente. Nous avons donc demandé une **clé API gratuite** et l'avons stockée dans un **secret GitHub** (`NVD_API_KEY`), jamais en clair dans le dépôt.
+
+![Secret NVD_API_KEY](images/23-secret-nvd.png)
