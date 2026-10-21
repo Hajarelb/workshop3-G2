@@ -46,6 +46,7 @@ Le dépôt `workshop3-G2` a été créé vide sur GitHub, puis alimenté avec le
 
 ![Dépôt vide](images/02-depot-vide.png)
 ![Code de WebGoat poussé](images/03-depot-webgoat.png)
+
 ## 5. Pipeline hérité de WebGoat et problème rencontré
 
 WebGoat fournit déjà des workflows GitHub Actions (`.github/workflows/build.yml`, etc.) et un fichier `.github/dependabot.yml`. Ils s'exécutent automatiquement à chaque push.
@@ -66,22 +67,23 @@ Le projet WebGoat contenait **déjà** un fichier `.github/dependabot.yml`. Avan
 
 ![dependabot.yml d'origine](images/06-dependabot-yml-origine.png)
 
-| Paramètre | Rôle |
-|---|---|
-| `version: 2` | Version du format de configuration |
-| `package-ecosystem` | Type de dépendances à surveiller |
-| `directory` | Dossier où se trouve le fichier de dépendances (`/` = racine) |
+|      Paramètre      |                              Rôle                              |
+|---------------------|----------------------------------------------------------------|
+| `version: 2`        | Version du format de configuration                             |
+| `package-ecosystem` | Type de dépendances à surveiller                               |
+| `directory`         | Dossier où se trouve le fichier de dépendances (`/` = racine)  |
 | `schedule.interval` | Fréquence de vérification (ici `weekly`, une fois par semaine) |
 
 Trois écosystèmes sont surveillés :
 
-| Écosystème | Ce qui est surveillé |
-|---|---|
-| `maven` | Les dépendances Java du `pom.xml` |
+|    Écosystème    |           Ce qui est surveillé           |
+|------------------|------------------------------------------|
+| `maven`          | Les dépendances Java du `pom.xml`        |
 | `github-actions` | Les actions utilisées dans les workflows |
-| `docker` | L'image de base du `Dockerfile` |
+| `docker`         | L'image de base du `Dockerfile`          |
 
 Cette configuration était déjà active : elle a généré les alertes et les Pull Requests présentées dans les sections suivantes.
+
 ## 7. Dependabot Alerts : état initial
 
 Nous avons activé **Dependency graph** et **Dependabot alerts** dans *Settings → Advanced Security*. GitHub détecte **36 alertes** (de gravité High et Moderate) dans les dépendances du projet.
@@ -98,15 +100,15 @@ Grâce au `dependabot.yml` existant, Dependabot a ouvert **7 PRs** de mise à jo
 
 ### Analyse
 
-| PR | Mise à jour | Vérifications | Décision |
-|---|---|---|---|
-| #1 | `java-jwt` 4.6.1 → 4.6.2 | OK | Fusionnée |
-| #2 | `docker/setup-qemu-action` 4.2.0 → 4.4.0 | OK | Fusionnée |
-| #3 | `jjwt` 0.9.1 → 0.13.0 | **Échec** | Non fusionnée |
-| #4 | `docker/build-push-action` 7.3.0 → 7.4.0 | OK | Fusionnée |
-| #5 | `rest-assured` 6.0.1 → 6.2.0 | OK | Fusionnée |
-| #6 | `bootstrap` 5.3.5 → 5.3.8 | OK | Fusionnée |
-| #7 | `bcprov-jdk18on` 1.85 → 1.86 | OK | Fusionnée |
+| PR |               Mise à jour                | Vérifications |   Décision    |
+|----|------------------------------------------|---------------|---------------|
+| #1 | `java-jwt` 4.6.1 → 4.6.2                 | OK            | Fusionnée     |
+| #2 | `docker/setup-qemu-action` 4.2.0 → 4.4.0 | OK            | Fusionnée     |
+| #3 | `jjwt` 0.9.1 → 0.13.0                    | **Échec**     | Non fusionnée |
+| #4 | `docker/build-push-action` 7.3.0 → 7.4.0 | OK            | Fusionnée     |
+| #5 | `rest-assured` 6.0.1 → 6.2.0             | OK            | Fusionnée     |
+| #6 | `bootstrap` 5.3.5 → 5.3.8                | OK            | Fusionnée     |
+| #7 | `bcprov-jdk18on` 1.85 → 1.86             | OK            | Fusionnée     |
 
 La PR #3 est une mise à jour **majeure** (0.9.1 → 0.13.0) : l'API de la bibliothèque a changé et le pipeline échoue. Elle nécessite une adaptation du code et n'a donc pas été fusionnée automatiquement.
 
