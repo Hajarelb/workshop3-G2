@@ -137,3 +137,73 @@ Après les fusions, le nombre d'alertes Dependabot **n'a pas changé** : il rest
 Les alertes portent uniquement sur la bibliothèque **XStream** (exécution de code à distance, injection de commandes, déni de service, SSRF), qu'aucune des PRs fusionnées ne mettait à jour.
 
 Les PRs de *version updates* maintiennent les dépendances à jour, mais ne ciblent pas spécifiquement les dépendances vulnérables. Pour cela, il faut activer les **Dependabot security updates** (voir section 10).
+
+## 10. Dependabot security updates et cas de XStream
+
+Les **Dependabot alerts** servent seulement à prévenir : elles n'ouvrent aucune PR. Pour obtenir des PRs de correction, il faut activer les **Dependabot security updates** (*Settings → Advanced Security*), ce que nous avons fait. C'est pourquoi la PR sur XStream n'est apparue qu'après cette activation.
+
+![Security updates activées](images/13-security-updates-actives.png)
+
+### Origine des alertes
+
+Les 36 alertes portent sur une seule bibliothèque : **XStream**, déclarée en version **1.4.5** (très ancienne) dans le `pom.xml`.
+
+![XStream dans le pom.xml](images/16-xstream-pom.png)
+
+### PR générée
+
+Après l'activation, Dependabot a ouvert la **PR #8** : mise à jour de XStream de **1.4.5 à 1.4.21**. GitHub indique que sa fusion résoudrait les alertes, dont une **critique**.
+
+![PR XStream](images/15-pr-xstream.png)
+
+Le job **build** échoue :
+
+![Erreur du build](images/15b-pr-xstream-erreur.png)
+
+Sur 398 tests, un seul échoue : `VulnerableComponentsLessonTest`, avec l'erreur `ForbiddenClass ... ContactImpl`. Dependabot ne modifie que le numéro de version, jamais le code Java : c'est à nous d'adapter le code.
+
+## 11. Correction du code
+
+La leçon *Vulnerable Components* de WebGoat est un exercice qui exploite volontairement XStream 1.4.5, qui accepte n'importe quelle classe lors de la désérialisation XML. Les versions récentes de XStream **refusent par défaut** toute classe non autorisée, même `ContactImpl`, qui est légitime.
+
+Correction : une **liste blanche** qui autorise uniquement `ContactImpl`. Toute autre classe, comme celles du code d'attaque (`ProcessBuilder`), reste refusée. Cette ligne a été ajoutée dans la leçon et dans le test :
+
+```java
+xstream.alias("contact", ContactImpl.class);
+xstream.allowTypes(new Class[] {ContactImpl.class}); // ligne ajoutée
+xstream.ignoreUnknownElements();
+```
+
+| Fichier | Modification |
+|---|---|
+| `VulnerableComponentsLesson.java` | ajout de `allowTypes` après `alias` |
+| `VulnerableComponentsLessonTest.java` | même ajout dans `testTransformation` |
+
+![Correction dans la leçon](images/17-correction-lesson.png)
+
+![Correction dans le test](images/18-correction-test.png)
+
+Nous avons poussé la correction sur la branche de la PR. La PR s'est mise à jour automatiquement et le pipeline a été relancé :
+
+![Checks de la PR après le push](images/19-pr-xstream-checks.png)
+
+Les checks sont passés au vert, puis la PR a été fusionnée.
+
+![PR fusionnée](images/20-pr-xstream-fusionnee.png)
+
+Le pipeline sur `main` reste vert : le projet compile et les 398 tests passent.
+
+![Build success](images/21-build-success.png)
+
+## 12. Résultat final
+
+Après la fusion, les **36 alertes** ont été fermées : le compteur **Open** est passé de **36 à 0**.
+
+|      | Avant | Après |
+|---|---|---|
+| Alertes Dependabot ouvertes | 36 | 0 |
+| XStream | 1.4.5 | 1.4.21 |
+
+![Alertes après correction](images/22-alertes-apres-correction.png)
+
+> **Compromis** : la liste blanche empêche l'exploitation de la leçon *Vulnerable Components* telle qu'elle est conçue (injection d'un objet malveillant dans XStream). C'est précisément l'effet recherché d'une correction de sécurité, mais l'exercice pédagogique ne peut plus être résolu comme prévu.
