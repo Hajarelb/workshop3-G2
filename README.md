@@ -1,4 +1,5 @@
 # Workshop 3 : Sécurité des dépendances (SCA)
+
 **Dependabot & OWASP Dependency-Check**
 
 - **Module** : DevSecOps, Master DevOps et Cloud Computing
@@ -20,21 +21,21 @@ Ces outils s'intègrent dans un pipeline CI/CD (GitHub Actions) pour appliquer l
 
 ## 2. Définitions
 
-| Terme | Définition |
-|---|---|
-| Dépendance | Bibliothèque externe utilisée par le projet, déclarée dans `pom.xml` |
-| CVE | Identifiant public d'une faille de sécurité connue |
-| CVSS | Score de gravité d'une CVE, de 0 à 10 |
-| SCA | Software Composition Analysis : analyse des composants tiers |
-| Dependabot | Outil GitHub qui alerte et propose des mises à jour de dépendances |
-| OWASP Dependency-Check | Outil SCA qui détecte les dépendances ayant des CVE connues |
-| Pull Request (PR) | Proposition de modification à relire avant fusion dans la branche principale |
+|         Terme          |                                  Définition                                  |
+|------------------------|------------------------------------------------------------------------------|
+| Dépendance             | Bibliothèque externe utilisée par le projet, déclarée dans `pom.xml`         |
+| CVE                    | Identifiant public d'une faille de sécurité connue                           |
+| CVSS                   | Score de gravité d'une CVE, de 0 à 10                                        |
+| SCA                    | Software Composition Analysis : analyse des composants tiers                 |
+| Dependabot             | Outil GitHub qui alerte et propose des mises à jour de dépendances           |
+| OWASP Dependency-Check | Outil SCA qui détecte les dépendances ayant des CVE connues                  |
+| Pull Request (PR)      | Proposition de modification à relire avant fusion dans la branche principale |
 
 ## 3. Environnement de travail
 
 Outils utilisés :
 - Git, GitHub (dépôt + GitHub Actions)
-- JDK (version : 26) et Maven Wrapper (`mvnw`) fourni par WebGoat
+- Java 25 (version requise par WebGoat), installé automatiquement par le workflow GitHub Actions
 - Éditeur : Visual Studio Code
 
 ![Versions des outils](images/01-outils.png)
